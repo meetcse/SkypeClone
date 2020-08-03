@@ -65,4 +65,12 @@ class FirebaseMethods {
         .document(currentUser.uid)
         .setData(user.toMap(user));
   }
+
+  Future<void> signOut() async {
+    //making this as a future because we can track the users action
+    //and if he signs out then we can perform certain action after he signs out
+    await _googleSignIn.disconnect();
+    await _googleSignIn.signOut();
+    return await _auth.signOut();
+  }
 }
