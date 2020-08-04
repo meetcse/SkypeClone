@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:skypeclone/models/user.dart';
 import 'package:skypeclone/resources/firebase_methods.dart';
 
 class FirebaseRepository {
@@ -16,4 +17,7 @@ class FirebaseRepository {
 
 //Responsible for signing out
   Future<void> signOut() => _firebaseMethods.signOut();
+
+  Future<List<User>> fetchAllUsers(FirebaseUser user) =>
+      _firebaseMethods.fetchAllUsers(user);
 }
