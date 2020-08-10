@@ -42,7 +42,7 @@ class FirebaseMethods {
   Future<bool> authenticateUser(FirebaseUser user) async {
     QuerySnapshot result = await firestore
         .collection(USERS_COLLECTION)
-        .where("email", isEqualTo: user.email)
+        .where(EMAIL_FIELD, isEqualTo: user.email)
         .getDocuments();
 
     final List<DocumentSnapshot> docs = result.documents;
