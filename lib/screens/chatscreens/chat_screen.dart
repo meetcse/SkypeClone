@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:skypeclone/constants/strings.dart';
 import 'package:skypeclone/models/message.dart';
@@ -21,10 +22,16 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textFieldController = TextEditingController();
   FirebaseRepository _repository = FirebaseRepository();
 
+  ScrollController _listScrollController = ScrollController();
+
   User sender;
   String _currentUserId;
 
+  FocusNode textFieldFocus = FocusNode();
+
   bool isWriting = false;
+
+  bool showEmojiPicker = false;
 
   @override
   void initState() {
@@ -42,6 +49,22 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  showKeyboard() => textFieldFocus.requestFocus();
+
+  hideKeyboard() => textFieldFocus.unfocus();
+
+  hideEmojiContainer() {
+    setState(() {
+      showEmojiPicker = false;
+    });
+  }
+
+  showEmojiContainer() {
+    setState(() {
+      showEmojiPicker = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,8 +74,26 @@ class _ChatScreenState extends State<ChatScreen> {
         children: <Widget>[
           Flexible(child: messageList()),
           chatControls(),
+          showEmojiPicker ? Container(child: emojiContainer()) : Container(),
         ],
       ),
+    );
+  }
+
+  emojiContainer() {
+    return EmojiPicker(
+      bgColor: UniversalVariables.separatorColor,
+      indicatorColor: UniversalVariables.blueColor,
+      rows: 3,
+      columns: 7,
+      onEmojiSelected: (emoji, category) {
+        setState(() {
+          isWriting = true;
+        });
+        textFieldController.text = textFieldController.text + emoji.emoji;
+      },
+      recommendKeywords: ["face", "happy", "party", "sad", "dance"],
+      numRecommended: 50,
     );
   }
 
@@ -69,9 +110,24 @@ class _ChatScreenState extends State<ChatScreen> {
           return Center(child: CircularProgressIndicator());
         }
 
+        //it is a callback which is called after  a frame is rendered and it calls exactly once in its lifetime. But it you
+        //make changes in UI then the frame is rendered once again and this callback is called again...
+        // SchedulerBinding.instance.addPostFrameCallback((_) {
+        //   _listScrollController.position.animateTo(
+        //       _listScrollController.position
+        //           .minScrollExtent //To scroll to bottom of list. If want reverse behaviour then use "maxScrollExtent". And if want to move to any exact position then use moveTo() method
+
+        //       ,
+        //       duration: Duration(milliseconds: 250),
+        //       curve: Curves.easeInOut);
+        // });   //But using this feature is good, but also hectic when user is reading some older message and new message arrived then it will automatically scroll to downwards.
+
         return ListView.builder(
           padding: EdgeInsets.all(10),
           itemCount: snapshot.data.documents.length,
+          reverse: true, //To display new sended message to very bottom
+          controller:
+              _listScrollController, //to scroll to bottom of list when new message arrives programmetically
           itemBuilder: (context, index) {
             return chatMessageItem(snapshot.data.documents[index]);
           },
@@ -249,38 +305,61 @@ class _ChatScreenState extends State<ChatScreen> {
             width: 5,
           ),
           Expanded(
-            child: TextField(
-              controller: textFieldController,
-              style: TextStyle(
-                color: Colors.white,
-              ),
-              onChanged: (value) {
-                (value.length > 0 && value.trim() != "")
-                    ? setWritingTo(true)
-                    : setWritingTo(false);
-              },
-              decoration: InputDecoration(
-                hintText: "Type a message",
-                hintStyle: TextStyle(
-                  color: UniversalVariables.greyColor,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50),
+            child: Stack(
+              children: <Widget>[
+                TextField(
+                  controller: textFieldController,
+                  focusNode: textFieldFocus,
+                  onTap: () {
+                    hideEmojiContainer();
+                  },
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
-                  borderSide: BorderSide.none,
+                  onChanged: (value) {
+                    (value.length > 0 && value.trim() != "")
+                        ? setWritingTo(true)
+                        : setWritingTo(false);
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Type a message",
+                    hintStyle: TextStyle(
+                      color: UniversalVariables.greyColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50),
+                      ),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 5,
+                    ),
+                    filled: true,
+                    fillColor: UniversalVariables.separatorColor,
+                  ),
                 ),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 5,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onPressed: () {
+                      if (!showEmojiPicker) {
+                        //keyboard is visible
+                        hideKeyboard();
+                        showEmojiContainer();
+                      } else {
+                        //Keyboard is hidden
+                        showKeyboard();
+                        hideEmojiContainer();
+                      }
+                    },
+                    icon: Icon(Icons.face),
+                  ),
                 ),
-                filled: true,
-                fillColor: UniversalVariables.separatorColor,
-                suffixIcon: GestureDetector(
-                  onTap: () {},
-                  child: Icon(Icons.face),
-                ),
-              ),
+              ],
             ),
           ),
           isWriting
