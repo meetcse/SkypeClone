@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:skypeclone/models/message.dart';
 import 'package:skypeclone/models/user.dart';
+import 'package:skypeclone/provider/image_upload_provider.dart';
 import 'package:skypeclone/resources/firebase_methods.dart';
 
 class FirebaseRepository {
@@ -24,4 +28,12 @@ class FirebaseRepository {
 
   Future<void> addMessageToDb(Message message, User sender, User receiver) =>
       _firebaseMethods.addMessageToDb(message, sender, receiver);
+
+  void uploadImage(
+          {@required File image,
+          @required String receiverId,
+          @required String senderId,
+          @required ImageUploadProvider imageUploadProvider}) =>
+      _firebaseMethods.uploadImage(
+          image, receiverId, senderId, imageUploadProvider);
 }
