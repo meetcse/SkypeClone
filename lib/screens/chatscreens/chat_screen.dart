@@ -12,6 +12,7 @@ import 'package:skypeclone/models/user.dart';
 import 'package:skypeclone/provider/image_upload_provider.dart';
 import 'package:skypeclone/resources/firebase_repository.dart';
 import 'package:skypeclone/screens/chatscreens/widgets/cached_image.dart';
+import 'package:skypeclone/utils/call_utilities.dart';
 import 'package:skypeclone/utils/universal_variables.dart';
 import 'package:skypeclone/utils/utilities.dart';
 import 'package:skypeclone/widgets/appbar.dart';
@@ -461,7 +462,15 @@ class _ChatScreenState extends State<ChatScreen> {
       centerTitle: false,
       title: Text(widget.receiver.name),
       actions: <Widget>[
-        IconButton(icon: Icon(Icons.video_call), onPressed: () {}),
+        IconButton(
+            icon: Icon(Icons.video_call),
+            onPressed: () {
+              CallUtils.dial(
+                context: context,
+                from: sender,
+                to: widget.receiver,
+              );
+            }),
         IconButton(icon: Icon(Icons.phone), onPressed: () {}),
       ],
     );

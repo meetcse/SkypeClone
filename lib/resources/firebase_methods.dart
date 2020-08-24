@@ -43,6 +43,7 @@ class FirebaseMethods {
 
     AuthResult result = await _auth.signInWithCredential(credential);
     FirebaseUser user = result.user;
+    print("G USER : " + user.toString());
     return user;
   }
 
