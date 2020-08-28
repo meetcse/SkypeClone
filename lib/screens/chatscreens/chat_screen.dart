@@ -82,24 +82,26 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
 
-    return Scaffold(
-      backgroundColor: UniversalVariables.blackColor,
-      appBar: customAppBar(context),
-      body: Column(
-        children: <Widget>[
-          Flexible(
-            child: messageList(),
-          ),
-          _imageUploadProvider.getViewState == ViewState.LOADING
-              ? Container(
-                  alignment: Alignment.centerRight,
-                  margin: EdgeInsets.only(right: 15),
-                  child: CircularProgressIndicator(),
-                )
-              : Container(),
-          chatControls(),
-          showEmojiPicker ? Container(child: emojiContainer()) : Container(),
-        ],
+    return PickupLayout(
+      scaffold: Scaffold(
+        backgroundColor: UniversalVariables.blackColor,
+        appBar: customAppBar(context),
+        body: Column(
+          children: <Widget>[
+            Flexible(
+              child: messageList(),
+            ),
+            _imageUploadProvider.getViewState == ViewState.LOADING
+                ? Container(
+                    alignment: Alignment.centerRight,
+                    margin: EdgeInsets.only(right: 15),
+                    child: CircularProgressIndicator(),
+                  )
+                : Container(),
+            chatControls(),
+            showEmojiPicker ? Container(child: emojiContainer()) : Container(),
+          ],
+        ),
       ),
     );
   }
@@ -502,39 +504,37 @@ class ModalTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PickupLayout(
-      scaffold: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: CustomTile(
-          onTap: onTap,
-          mini: false,
-          leading: Container(
-            margin: EdgeInsets.only(right: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: UniversalVariables.receiverColor,
-            ),
-            padding: EdgeInsets.all(10),
-            child: Icon(
-              icon,
-              color: UniversalVariables.greyColor,
-              size: 38,
-            ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      child: CustomTile(
+        onTap: onTap,
+        mini: false,
+        leading: Container(
+          margin: EdgeInsets.only(right: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: UniversalVariables.receiverColor,
           ),
-          subtitle: Text(
-            subtitle,
-            style: TextStyle(
-              color: UniversalVariables.greyColor,
-              fontSize: 14,
-            ),
+          padding: EdgeInsets.all(10),
+          child: Icon(
+            icon,
+            color: UniversalVariables.greyColor,
+            size: 38,
           ),
-          title: Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontSize: 18,
-            ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: UniversalVariables.greyColor,
+            fontSize: 14,
+          ),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 18,
           ),
         ),
       ),
