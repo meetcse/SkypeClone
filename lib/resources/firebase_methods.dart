@@ -16,6 +16,8 @@ class FirebaseMethods {
 
   GoogleSignIn _googleSignIn = GoogleSignIn();
   static final Firestore firestore = Firestore.instance;
+  static final CollectionReference _userCollection =
+      firestore.collection(USERS_COLLECTION);
 
   StorageReference _storageReference;
 
@@ -173,5 +175,14 @@ class FirebaseMethods {
     imageUploadProvider.setToIdle();
 
     setImageMsg(url, receiverId, senderId);
+  }
+
+  Future<User> getUserDetails() async {
+    FirebaseUser currentUser = await getCurrentUser();
+
+    DocumentSnapshot documentSnapshot =
+        await _userCollection.document(currentUser.uid).get();
+
+    return User.fromMap(documentSnapshot.data);
   }
 }

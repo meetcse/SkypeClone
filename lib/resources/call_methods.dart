@@ -36,4 +36,8 @@ class CallMethods {
       return false;
     }
   }
+
+  Stream<DocumentSnapshot> callStream({String uid}) {
+    return callCollection.document(uid).snapshots();
+  }
 }

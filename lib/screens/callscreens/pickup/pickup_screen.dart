@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:skypeclone/models/call.dart';
 import 'package:skypeclone/resources/call_methods.dart';
 import 'package:skypeclone/screens/callscreens/call_screen.dart';
+import 'package:skypeclone/screens/chatscreens/widgets/cached_image.dart';
+import 'package:skypeclone/utils/permissions.dart';
 
 class PickUpScreen extends StatelessWidget {
   final Call call;
@@ -27,10 +29,10 @@ class PickUpScreen extends StatelessWidget {
             SizedBox(
               height: 50,
             ),
-            Image.network(
+            CachedImage(
               call.callerPic,
-              height: 150,
-              width: 150,
+              isRound: true,
+              radius: 180,
             ),
             SizedBox(
               height: 15,
@@ -63,11 +65,14 @@ class PickUpScreen extends StatelessWidget {
                 IconButton(
                     icon: Icon(Icons.call),
                     color: Colors.green,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return CallScreen(call: call);
-                      }));
+                    onPressed: () async {
+                      if (await Permissions
+                          .cameraAndMicrophonePermissionsGranted()) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return CallScreen(call: call);
+                        }));
+                      }
                     })
               ],
             ),

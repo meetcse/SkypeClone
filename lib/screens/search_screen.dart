@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:skypeclone/models/user.dart';
 import 'package:skypeclone/resources/firebase_repository.dart';
+import 'package:skypeclone/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:skypeclone/screens/chatscreens/chat_screen.dart';
 import 'package:skypeclone/utils/universal_variables.dart';
 import 'package:skypeclone/widgets/custom_tile.dart';
@@ -48,42 +49,44 @@ class _SearchScreenState extends State<SearchScreen> {
       elevation: 0,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight + 20),
-        child: Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: TextField(
-            controller: searchController,
-            onChanged: (val) {
-              setState(() {
-                query = val;
-              });
-            },
-            cursorColor: UniversalVariables.blackColor,
-            autofocus: true,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontSize: 35,
-            ),
-            decoration: InputDecoration(
-              suffixIcon: IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  //This widget binding is used because except that if we direct;y
-                  //use to clear search controller then it throws an exception
-                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    searchController.clear();
-                  });
-                },
-              ),
-              border: InputBorder.none,
-              hintText: "Search",
-              hintStyle: TextStyle(
+        child: PickupLayout(
+          scaffold: Padding(
+            padding: EdgeInsets.only(left: 20),
+            child: TextField(
+              controller: searchController,
+              onChanged: (val) {
+                setState(() {
+                  query = val;
+                });
+              },
+              cursorColor: UniversalVariables.blackColor,
+              autofocus: true,
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
                 fontSize: 35,
-                color: Color(0x88ffffff),
+              ),
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    //This widget binding is used because except that if we direct;y
+                    //use to clear search controller then it throws an exception
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      searchController.clear();
+                    });
+                  },
+                ),
+                border: InputBorder.none,
+                hintText: "Search",
+                hintStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 35,
+                  color: Color(0x88ffffff),
+                ),
               ),
             ),
           ),

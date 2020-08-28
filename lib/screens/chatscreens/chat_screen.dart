@@ -11,8 +11,10 @@ import 'package:skypeclone/models/message.dart';
 import 'package:skypeclone/models/user.dart';
 import 'package:skypeclone/provider/image_upload_provider.dart';
 import 'package:skypeclone/resources/firebase_repository.dart';
+import 'package:skypeclone/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:skypeclone/screens/chatscreens/widgets/cached_image.dart';
 import 'package:skypeclone/utils/call_utilities.dart';
+import 'package:skypeclone/utils/permissions.dart';
 import 'package:skypeclone/utils/universal_variables.dart';
 import 'package:skypeclone/utils/utilities.dart';
 import 'package:skypeclone/widgets/appbar.dart';
@@ -204,7 +206,14 @@ class _ChatScreenState extends State<ChatScreen> {
               fontSize: 16.0,
             ),
           )
-        : CachedImage(url: message.photoUrl);
+        : message.photoUrl != null
+            ? CachedImage(
+                message.photoUrl,
+                height: 250,
+                width: 250,
+                radius: 10,
+              )
+            : Text("URL was Null");
   }
 
   Widget receiverLayout(Message message) {
@@ -464,12 +473,14 @@ class _ChatScreenState extends State<ChatScreen> {
       actions: <Widget>[
         IconButton(
             icon: Icon(Icons.video_call),
-            onPressed: () {
-              CallUtils.dial(
-                context: context,
-                from: sender,
-                to: widget.receiver,
-              );
+            onPressed: () async {
+              if (await Permissions.cameraAndMicrophonePermissionsGranted()) {
+                CallUtils.dial(
+                  context: context,
+                  from: sender,
+                  to: widget.receiver,
+                );
+              }
             }),
         IconButton(icon: Icon(Icons.phone), onPressed: () {}),
       ],
@@ -491,37 +502,39 @@ class ModalTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: CustomTile(
-        onTap: onTap,
-        mini: false,
-        leading: Container(
-          margin: EdgeInsets.only(right: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: UniversalVariables.receiverColor,
+    return PickupLayout(
+      scaffold: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: CustomTile(
+          onTap: onTap,
+          mini: false,
+          leading: Container(
+            margin: EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: UniversalVariables.receiverColor,
+            ),
+            padding: EdgeInsets.all(10),
+            child: Icon(
+              icon,
+              color: UniversalVariables.greyColor,
+              size: 38,
+            ),
           ),
-          padding: EdgeInsets.all(10),
-          child: Icon(
-            icon,
-            color: UniversalVariables.greyColor,
-            size: 38,
+          subtitle: Text(
+            subtitle,
+            style: TextStyle(
+              color: UniversalVariables.greyColor,
+              fontSize: 14,
+            ),
           ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: UniversalVariables.greyColor,
-            fontSize: 14,
-          ),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 18,
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 18,
+            ),
           ),
         ),
       ),
