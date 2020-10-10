@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skypeclone/resources/firebase_repository.dart';
+import 'package:skypeclone/resources/auth_methods.dart';
 import 'package:skypeclone/utils/universal_variables.dart';
 import 'package:skypeclone/utils/utilities.dart';
 import 'package:skypeclone/widgets/appbar.dart';
@@ -10,8 +10,7 @@ class ChatListScreen extends StatefulWidget {
   _ChatListScreenState createState() => _ChatListScreenState();
 }
 
-//global
-FirebaseRepository _repository = FirebaseRepository();
+AuthMethods _authMethods = AuthMethods();
 
 class _ChatListScreenState extends State<ChatListScreen> {
   String currentUserId;
@@ -21,7 +20,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _repository.getCurrentUser().then((user) {
+    _authMethods.getCurrentUser().then((user) {
       setState(() {
         currentUserId = user.uid;
         initials = Utils.getInitials(user.displayName);

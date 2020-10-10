@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skypeclone/provider/image_upload_provider.dart';
 import 'package:skypeclone/provider/user_provider.dart';
-import 'package:skypeclone/resources/firebase_repository.dart';
+import 'package:skypeclone/resources/auth_methods.dart';
 import 'package:skypeclone/screens/home_screen.dart';
 import 'package:skypeclone/screens/login_screen.dart';
 import 'package:skypeclone/screens/search_screen.dart';
@@ -17,7 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  FirebaseRepository _repository = FirebaseRepository();
+  AuthMethods _authMethods = AuthMethods();
 
   //If we have to use more than one providers then make use of "MultiProvider"
   //And if single provider is there then use like => ChangeNotifierProvider<ImageUploadProvider>
@@ -43,7 +42,7 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.dark,
         ),
         home: FutureBuilder(
-          future: _repository.getCurrentUser(),
+          future: _authMethods.getCurrentUser(),
           builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
             if (snapshot.hasData) {
               return HomeScreen();

@@ -10,7 +10,9 @@ import 'package:skypeclone/enum/view_state.dart';
 import 'package:skypeclone/models/message.dart';
 import 'package:skypeclone/models/user.dart';
 import 'package:skypeclone/provider/image_upload_provider.dart';
-import 'package:skypeclone/resources/firebase_repository.dart';
+import 'package:skypeclone/resources/auth_methods.dart';
+import 'package:skypeclone/resources/chat_methods.dart';
+import 'package:skypeclone/resources/storage_methods.dart';
 import 'package:skypeclone/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:skypeclone/screens/chatscreens/widgets/cached_image.dart';
 import 'package:skypeclone/utils/call_utilities.dart';
@@ -31,7 +33,10 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textFieldController = TextEditingController();
-  FirebaseRepository _repository = FirebaseRepository();
+
+  AuthMethods _authMethods = AuthMethods();
+  ChatMethods _chatMethods = ChatMethods();
+  StorageMethods _storageMethods = StorageMethods();
 
   ScrollController _listScrollController = ScrollController();
 
@@ -49,7 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _repository.getCurrentUser().then((user) {
+    _authMethods.getCurrentUser().then((user) {
       _currentUserId = user.uid;
 
       setState(() {
@@ -250,11 +255,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     pickImage({@required ImageSource source}) async {
       File selectedImage = await Utils.pickImage(source: source);
-      _repository.uploadImage(
-        image: selectedImage,
-        receiverId: widget.receiver.uid,
-        senderId: _currentUserId,
-        imageUploadProvider: _imageUploadProvider,
+      _storageMethods.uploadImage(
+        selectedImage,
+        widget.receiver.uid,
+        _currentUserId,
+        _imageUploadProvider,
       );
     }
 
@@ -458,7 +463,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     textFieldController.text = "";
 
-    _repository.addMessageToDb(_message, sender, widget.receiver);
+    _chatMethods.addMessageToDb(_message, sender, widget.receiver);
 
 //
   }
